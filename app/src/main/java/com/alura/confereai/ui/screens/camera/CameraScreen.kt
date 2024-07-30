@@ -30,7 +30,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.alura.confereai.R
+import com.alura.confereai.data.Emblem
 import com.alura.confereai.ui.components.LabelBarcode
+import com.alura.confereai.utils.HandleBarcode.handleBarcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -73,16 +75,8 @@ fun CameraScreen() {
                     .addOnSuccessListener { result ->
                         if (result.isNotEmpty()) {
                             val barcode = result.first()
-                            when (barcode.valueType) {
-                                Barcode.TYPE_WIFI -> {
-                                    val password = barcode.wifi?.password
-                                    val ssid = barcode.wifi?.ssid
-                                    Log.d("barcodeWifi", "SSID: $ssid, Password: $password")
-                                }
-
-                                Barcode.TYPE_EMAIL -> {
-
-                                }
+                            handleBarcode(barcode){ emblem: Emblem ->
+                                viewModel.setDetectedEmblem(emblem)
                             }
 
                             val message = result.first().rawValue
@@ -125,13 +119,13 @@ private fun CameraOverlay(state: CameraScreenUiState) {
                 .size(350.dp)
         )
 
-        state.textMessage?.let { message ->
-            Text(
-                text = message,
-                color = Color.White,
-                fontSize = 16.sp
-            )
-        }
+//        state.textMessage?.let { message ->
+//            Text(
+//                text = message,
+//                color = Color.White,
+//                fontSize = 16.sp
+//            )
+//        }
 
         state.detectedEmblem?.let { emblem ->
             LabelBarcode(emblem.description)
