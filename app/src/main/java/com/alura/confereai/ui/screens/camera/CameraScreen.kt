@@ -32,6 +32,7 @@ import com.alura.confereai.R
 import com.alura.confereai.ui.components.LabelBarcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
 
@@ -52,7 +53,7 @@ fun CameraScreen() {
 
 
     val options = BarcodeScannerOptions.Builder()
-        .enableAllPotentialBarcodes() // Optional
+        .enableAllPotentialBarcodes()
         .build()
 
     val scanner = remember {
