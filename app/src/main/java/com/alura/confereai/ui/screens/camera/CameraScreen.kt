@@ -30,6 +30,9 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.alura.confereai.R
 import com.alura.confereai.ui.components.LabelBarcode
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 
 
 @OptIn(ExperimentalGetImage::class)
@@ -47,9 +50,36 @@ fun CameraScreen() {
         }
     }
 
+
+    val options = BarcodeScannerOptions.Builder()
+        .enableAllPotentialBarcodes() // Optional
+        .build()
+
+    val scanner = remember {
+        BarcodeScanning.getClient(options)
+    }
+
     val cameraAnalyzer = remember {
         CameraAnalyzer { imageProxy ->
-            imageProxy.close()
+
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image =
+                    InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+                scanner.process(image)
+                    .addOnSuccessListener { result ->
+                        if (result.isNotEmpty()) {
+                            val message = result.first().rawValue
+                            viewModel.setTextMessage(message.toString())
+                        }
+                    }
+                    .addOnCompleteListener {
+                        imageProxy.close()
+                    }
+            }
+
+
         }
     }
 
