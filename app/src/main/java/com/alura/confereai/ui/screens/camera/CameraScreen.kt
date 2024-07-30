@@ -1,5 +1,6 @@
 package com.alura.confereai.ui.screens.camera
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.view.CameraController
@@ -71,6 +72,19 @@ fun CameraScreen() {
                 scanner.process(image)
                     .addOnSuccessListener { result ->
                         if (result.isNotEmpty()) {
+                            val barcode = result.first()
+                            when (barcode.valueType) {
+                                Barcode.TYPE_WIFI -> {
+                                    val password = barcode.wifi?.password
+                                    val ssid = barcode.wifi?.ssid
+                                    Log.d("barcodeWifi", "SSID: $ssid, Password: $password")
+                                }
+
+                                Barcode.TYPE_EMAIL -> {
+
+                                }
+                            }
+
                             val message = result.first().rawValue
                             viewModel.setTextMessage(message.toString())
                         }
