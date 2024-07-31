@@ -35,6 +35,7 @@ import com.alura.confereai.ui.components.LabelBarcode
 import com.alura.confereai.utils.HandleBarcode.handleBarcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.ZoomSuggestionOptions
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
@@ -54,9 +55,19 @@ fun CameraScreen() {
         }
     }
 
+    val zoomCallback = { zoomRatio: Float ->
+        Log.d("zoomCallback", "Zoom do modelo $zoomRatio")
+        cameraController.setZoomRatio(zoomRatio)
+        true
+    }
 
     val options = BarcodeScannerOptions.Builder()
         .enableAllPotentialBarcodes()
+        .setZoomSuggestionOptions(
+            ZoomSuggestionOptions.Builder(zoomCallback)
+//                .setMaxSupportedZoomRatio(maxSupportedZoomRatio)
+                .build()
+        ) // Optional
         .build()
 
     val scanner = remember {
@@ -75,7 +86,7 @@ fun CameraScreen() {
                     .addOnSuccessListener { result ->
                         if (result.isNotEmpty()) {
                             val barcode = result.first()
-                            handleBarcode(barcode){ emblem: Emblem ->
+                            handleBarcode(barcode) { emblem: Emblem ->
                                 viewModel.setDetectedEmblem(emblem)
                             }
 
