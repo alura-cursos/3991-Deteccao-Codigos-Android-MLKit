@@ -17,7 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,65 +50,77 @@ fun CameraScreen() {
     val context = LocalContext.current.applicationContext
 
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    var maxZoomRatio by remember {
+        mutableFloatStateOf(0f)
+    }
+
     val cameraController: LifecycleCameraController = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
             bindToLifecycle(lifecycleOwner)
-        }
-    }
-
-    val zoomCallback = { zoomRatio: Float ->
-        Log.d("zoomCallback", "Zoom do modelo $zoomRatio")
-        cameraController.setZoomRatio(zoomRatio)
-        true
-    }
-
-    val options = BarcodeScannerOptions.Builder()
-        .enableAllPotentialBarcodes()
-        .setZoomSuggestionOptions(
-            ZoomSuggestionOptions.Builder(zoomCallback)
-//                .setMaxSupportedZoomRatio(maxSupportedZoomRatio)
-                .build()
-        ) // Optional
-        .build()
-
-    val scanner = remember {
-        BarcodeScanning.getClient(options)
-    }
-
-    val cameraAnalyzer = remember {
-        CameraAnalyzer { imageProxy ->
-
-            val mediaImage = imageProxy.image
-            if (mediaImage != null) {
-                val image =
-                    InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-                scanner.process(image)
-                    .addOnSuccessListener { result ->
-                        if (result.isNotEmpty()) {
-                            val barcode = result.first()
-                            handleBarcode(barcode) { emblem: Emblem ->
-                                viewModel.setDetectedEmblem(emblem)
-                            }
-
-                            val message = result.first().rawValue
-                            viewModel.setTextMessage(message.toString())
-                        }
-                    }
-                    .addOnCompleteListener {
-                        imageProxy.close()
-                    }
+            zoomState.observe(lifecycleOwner) {
+                maxZoomRatio = it.maxZoomRatio
+                Log.d("maxZoomRatio", "Zoom maximo da camera: $maxZoomRatio")
             }
-
-
         }
     }
 
-    cameraController.setImageAnalysisAnalyzer(
-        ContextCompat.getMainExecutor(context),
-        cameraAnalyzer
-    )
+
+    if (maxZoomRatio > 0f) {
+        val zoomCallback = { zoomRatio: Float ->
+            Log.d("zoomCallback", "Zoom do modelo $zoomRatio")
+            cameraController.setZoomRatio(zoomRatio)
+            true
+        }
+
+        val options = BarcodeScannerOptions.Builder()
+            .enableAllPotentialBarcodes()
+            .setZoomSuggestionOptions(
+                ZoomSuggestionOptions.Builder(zoomCallback)
+                    .setMaxSupportedZoomRatio(maxZoomRatio)
+                    .build()
+            ) // Optional
+            .build()
+
+        val scanner = remember {
+            BarcodeScanning.getClient(options)
+        }
+
+        val cameraAnalyzer = remember {
+            CameraAnalyzer { imageProxy ->
+
+                val mediaImage = imageProxy.image
+                if (mediaImage != null) {
+                    val image =
+                        InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+
+                    scanner.process(image)
+                        .addOnSuccessListener { result ->
+                            if (result.isNotEmpty()) {
+                                val barcode = result.first()
+                                handleBarcode(barcode) { emblem: Emblem ->
+                                    viewModel.setDetectedEmblem(emblem)
+                                }
+
+                                val message = result.first().rawValue
+                                viewModel.setTextMessage(message.toString())
+                            }
+                        }
+                        .addOnCompleteListener {
+                            imageProxy.close()
+                        }
+                }
+
+
+            }
+        }
+
+        cameraController.setImageAnalysisAnalyzer(
+            ContextCompat.getMainExecutor(context),
+            cameraAnalyzer
+        )
+    }
 
     CameraPreview(cameraController = cameraController)
 
