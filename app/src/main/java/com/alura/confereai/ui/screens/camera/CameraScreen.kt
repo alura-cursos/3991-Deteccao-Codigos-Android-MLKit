@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,9 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.ZoomSuggestionOptions
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalGetImage::class)
@@ -50,6 +54,7 @@ fun CameraScreen() {
     val context = LocalContext.current.applicationContext
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
 
     var maxZoomRatio by remember {
         mutableFloatStateOf(0f)
@@ -70,7 +75,11 @@ fun CameraScreen() {
     if (maxZoomRatio > 0f) {
         val zoomCallback = { zoomRatio: Float ->
             Log.d("zoomCallback", "Zoom do modelo $zoomRatio")
-            cameraController.setZoomRatio(zoomRatio)
+            scope.launch {
+                withContext(Dispatchers.Main) {
+                    cameraController.setZoomRatio(zoomRatio)
+                }
+            }
             true
         }
 
