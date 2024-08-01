@@ -9,6 +9,7 @@ import com.alura.confereai.ui.screens.home.HomeNavHost
 import com.alura.confereai.ui.theme.ConfereAITheme
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,8 +20,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val scanner = GmsBarcodeScanning.getClient(this)
-//        scanner.startScan()
-
         val moduleInstallClient = ModuleInstall.getClient(this)
         val moduleInstallRequest =
             ModuleInstallRequest.newBuilder()
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
             .installModules(moduleInstallRequest)
             .addOnSuccessListener {
                 if (it.areModulesAlreadyInstalled()) {
-                    scanner.startScan()
                     Log.d("StatusDownload", "Modulo já baixado")
                 } else {
                     Log.d("StatusDownload", "Modulo não baixado")
