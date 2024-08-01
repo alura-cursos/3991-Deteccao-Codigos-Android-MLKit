@@ -85,4 +85,5 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     implementation (libs.play.services.mlkit.barcode.scanning)
+    implementation (libs.play.services.code.scanner)
 }
