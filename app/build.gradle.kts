@@ -86,4 +86,5 @@ dependencies {
 
     implementation (libs.play.services.mlkit.barcode.scanning)
     implementation (libs.play.services.code.scanner)
+    implementation (libs.play.services.base)
 }
