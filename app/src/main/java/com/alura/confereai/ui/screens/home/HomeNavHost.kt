@@ -86,6 +86,7 @@ fun HomeNavHost(
                         onBarcodeDetected = {
                             scope.launch {
                                 navController.navigateUp()
+                                navController.navigate(detailRoute)
                             }
                         },
                     )
