@@ -1,6 +1,5 @@
 package com.alura.confereai.ui.screens.camera
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.view.CameraController
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,7 +36,6 @@ import com.alura.confereai.utils.HandleBarcode.handleBarcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.ZoomSuggestionOptions
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +62,6 @@ fun CameraScreen() {
             bindToLifecycle(lifecycleOwner)
             zoomState.observe(lifecycleOwner) {
                 maxZoomRatio = it.maxZoomRatio
-                Log.d("maxZoomRatio", "Zoom maximo da camera: $maxZoomRatio")
             }
         }
     }
@@ -74,7 +69,6 @@ fun CameraScreen() {
 
     if (maxZoomRatio > 0f) {
         val zoomCallback = { zoomRatio: Float ->
-            Log.d("zoomCallback", "Zoom do modelo $zoomRatio")
             scope.launch {
                 withContext(Dispatchers.Main) {
                     cameraController.setZoomRatio(zoomRatio)
@@ -89,7 +83,7 @@ fun CameraScreen() {
                 ZoomSuggestionOptions.Builder(zoomCallback)
                     .setMaxSupportedZoomRatio(maxZoomRatio)
                     .build()
-            ) // Optional
+            )
             .build()
 
         val scanner = remember {
@@ -152,14 +146,6 @@ private fun CameraOverlay(state: CameraScreenUiState) {
             modifier = Modifier
                 .size(350.dp)
         )
-
-//        state.textMessage?.let { message ->
-//            Text(
-//                text = message,
-//                color = Color.White,
-//                fontSize = 16.sp
-//            )
-//        }
 
         state.detectedEmblem?.let { emblem ->
             LabelBarcode(emblem.description)
