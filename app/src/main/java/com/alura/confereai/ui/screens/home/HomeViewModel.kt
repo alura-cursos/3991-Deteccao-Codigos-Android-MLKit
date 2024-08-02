@@ -65,4 +65,8 @@ class HomeViewModel @Inject constructor(
             setSelectEmblem(emblem)
         }
     }
+
+    fun triggerAction(emblem: Emblem) {
+        actionHandler.handleBarcodeAction(emblem)
+    }
 }

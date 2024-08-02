@@ -97,7 +97,9 @@ fun HomeNavHost(
                 composable(detailRoute) {
                     DetailCodeScreen(
                         emblem = state.selectedEmblem,
-                        onClicked = {}
+                        onClicked = {
+                            homeViewModel.triggerAction(it)
+                        }
                     )
                 }
             }
