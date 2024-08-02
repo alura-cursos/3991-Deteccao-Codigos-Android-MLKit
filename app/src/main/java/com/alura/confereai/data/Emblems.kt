@@ -15,7 +15,7 @@ data class WifiBarcode(
     val password: String,
     val encryptionType: Int
 ) : Emblem(
-    "Boas vindas!",
+    "Boas-vindas!",
     "Sinta-se em casa, você pode ser conectar a internet pela WiFi $ssid, senha $password",
     "Conectar",
     image = R.drawable.emblem_wifi
@@ -27,7 +27,7 @@ data class UrlBarcode(
     val urTitle: String
 ) : Emblem(
     "Mergulhe em IA",
-    "Conheça os cursos e formações de Inteligência Artificial no maior ecossistema de ensino do Brasil",
+    "Conheça os cursos e formações de Inteligência Artificial no maior ecossistema de ensino do Brasil!",
     "Visitar site",
     image = R.drawable.emblem_alura,
 )
@@ -46,7 +46,7 @@ data class GeoBarcode(
     val lat: Double,
     val lng: Double
 ) : Emblem(
-    "Achei você",
+    "Achei você!",
     "Que conhecer nossas instalações? Venha nos visitar algum dia na sede de São Paulo",
     "Ver no mapa",
     image = R.drawable.emblem_maps,

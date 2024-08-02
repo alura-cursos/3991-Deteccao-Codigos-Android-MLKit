@@ -85,6 +85,7 @@ fun HomeNavHost(
                     GoogleScanScreen(
                         onBarcodeDetected = {
                             scope.launch {
+                                homeViewModel.newBarcode(it)
                                 navController.navigateUp()
                                 navController.navigate(detailRoute)
                             }

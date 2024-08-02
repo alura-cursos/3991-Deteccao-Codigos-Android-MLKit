@@ -3,6 +3,8 @@ package com.alura.confereai.ui.screens.home
 import androidx.lifecycle.ViewModel
 import com.alura.confereai.data.Emblem
 import com.alura.confereai.utils.ActionHandler
+import com.alura.confereai.utils.HandleBarcode.handleBarcode
+import com.google.mlkit.vision.barcode.common.Barcode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,6 +57,12 @@ class HomeViewModel @Inject constructor(
                     lastUpdatedIndex = lastUpdatedIndex + 1
                 )
             }
+        }
+    }
+
+    fun newBarcode(barcode: Barcode) {
+        handleBarcode(barcode) { emblem: Emblem ->
+            setSelectEmblem(emblem)
         }
     }
 }
